@@ -1,16 +1,17 @@
 #!/bin/bash
 
-function update_wordpress(){
-  
-  curl -SsL -o /root/wordpress/latest.tar.gz  http://wordpress.org/latest.tar.gz
+function update_wordpress() {
+  curl -SsL http://wordpress.org/latest.tar.gz -o /root/wordpress/latest.tar.gz
 }
 
 
 function deploy_wordpress() {
   wp_name=$1
   wp_lang=${2:-"EN_en"}
+  wp_host=${3:-"localhost"}
   if [ ! -d /usr/share/nginx/$wp_name ]; then
-    tar xzf /root/wordpress/latest.tar.gz -C /usr/share/nginx/$wp_name
+    mkdir /usr/share/nginx/$wp_name
+    tar --strip-components=1 -xzf /root/wordpress/latest.tar.gz -C /usr/share/nginx/$wp_name
   fi
   if [ ! -f /usr/share/nginx/$wp_name/wp-config.php ]; then
     WORDPRESS_DB_NAME="wordpress_$wp_name"
@@ -33,9 +34,9 @@ function deploy_wordpress() {
 
 
     # Download nginx helper plugin
-    curl -O `curl -i -s http://wordpress.org/plugins/nginx-helper/ | egrep -o "http://downloads.wordpress.org/plugin/[^']+"`
-    unzip -o nginx-helper.*.zip -d /usr/share/nginx/$wp_name/wp-content/plugins
-    chown -R www-data:www-data /usr/share/nginx/$wp_name/wp-content/plugins/nginx-helper
+    #curl -O `curl -i -s http://wordpress.org/plugins/nginx-helper/ | egrep -o "http://downloads.wordpress.org/plugin/[^']+"`
+    #unzip -o nginx-helper.*.zip -d /usr/share/nginx/$wp_name/wp-content/plugins
+    #chown -R www-data:www-data /usr/share/nginx/$wp_name/wp-content/plugins/nginx-helper
 
     # Activate nginx plugin and set up pretty permalink structure once logged in
     cat << ENDL >> /usr/share/nginx/$wp_name/wp-config.php
@@ -51,8 +52,11 @@ if ( count( \$plugins ) === 0 ) {
   }
 }
 ENDL
+    cat /root/default-wordpress-nginx.conf | sed "s/__project_name__/$wp_name/g;s#__project_path__#/usr/share/nginx/$wp_name#g;s/__project_hosts__/$wp_host/g"  > /etc/nginx/sites-available/project_$wp_name.conf
+    ln -s /etc/nginx/sites-available/project_$wp_name.conf /etc/nginx/sites-enabled/project_$wp_name.conf
+    service nginx reload
 
-  chown www-data:www-data /usr/share/nginx/$wp_name/wp-config.php
+    chown -R www-data:www-data /usr/share/nginx/$wp_name
 
     echo "Create Database"
     mysql -h$MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $WORDPRESS_DB_NAME;CREATE DATABASE $WORDPRESS_DB_NAME;"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+set -x
 # Copy ssh keys if there are presents
 if [ -d "/root/ssh-keys" -a "$(ls /root/ssh-keys)" ]; then
   mkdir -p /root/.ssh
@@ -14,8 +14,8 @@ source /root/utils_wordpress.sh
 
 update_wordpress
 
-for wp-project in `find /root/projects/ -type f -printf "%f\n"`
+for wp_project in `find /root/projects/ -not -path '*/\.*' -type f -printf "%f\n"`
 do
-  source /root/projects/$wp-project
-  deploy_wordpress $wp-project ${wp_lang:-"ES_es"}
+  source /root/projects/$wp_project
+  deploy_wordpress $wp_project ${WP_LANG:-"ES_es"} ${WP_HOST:-"localhost"}
 done
