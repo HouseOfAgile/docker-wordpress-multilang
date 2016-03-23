@@ -31,7 +31,8 @@ function deploy_wordpress() {
     /'SECURE_AUTH_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
     /'LOGGED_IN_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
     /'NONCE_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/" /usr/share/nginx/$wp_name/wp-config-sample.php > /usr/share/nginx/$wp_name/wp-config.php
-
+    
+    echo -e "if (isset(\$_SERVER['HTTP_X_FORWARDED_PROTO']) && \$_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')\n  \$_SERVER['HTTPS'] = 'on';" >>/usr/share/nginx/$wp_name/wp-config.php
 
     # Download nginx helper plugin
     #curl -O `curl -i -s http://wordpress.org/plugins/nginx-helper/ | egrep -o "http://downloads.wordpress.org/plugin/[^']+"`
