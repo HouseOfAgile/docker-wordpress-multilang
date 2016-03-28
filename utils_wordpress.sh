@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 function update_wordpress() {
   curl -SsL http://wordpress.org/latest.tar.gz -o /root/wordpress/latest.tar.gz
@@ -14,8 +14,10 @@ function deploy_wordpress() {
     tar --strip-components=1 -xzf /root/wordpress/latest.tar.gz -C /usr/share/nginx/$wp_name
   fi
   if [ ! -f /usr/share/nginx/$wp_name/wp-config.php ]; then
-    WORDPRESS_DB_NAME="wordpress_$wp_name"
-    WORDPRESS_DB_USER="wp_$wp_name"
+    # mysql username should be shorter than 15 characters
+    short_name=`echo $wp_name |cut -c1-11`
+    WORDPRESS_DB_NAME="wordpress_$short_name"
+    WORDPRESS_DB_USER="wp_$short_name"
     WORDPRESS_DB_PASSWORD=`pwgen -c -n -1 12`
 
     sed -e "s/database_name_here/$WORDPRESS_DB_NAME/
@@ -30,10 +32,9 @@ function deploy_wordpress() {
     /'AUTH_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
     /'SECURE_AUTH_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
     /'LOGGED_IN_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
-    /'NONCE_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/" /usr/share/nginx/$wp_name/wp-config-sample.php > /usr/share/nginx/$wp_name/wp-config.php
+    /'NONCE_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
+    /Happy blogging/s/$/\nif (isset(\$_SERVER['HTTP_X_FORWARDED_PROTO']) \&\& \$_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')\n  \$_SERVER['HTTPS'] = 'on';\n/" /usr/share/nginx/$wp_name/wp-config-sample.php > /usr/share/nginx/$wp_name/wp-config.php
     
-    echo -e "if (isset(\$_SERVER['HTTP_X_FORWARDED_PROTO']) && \$_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')\n  \$_SERVER['HTTPS'] = 'on';" >>/usr/share/nginx/$wp_name/wp-config.php
-
     # Download nginx helper plugin
     #curl -O `curl -i -s http://wordpress.org/plugins/nginx-helper/ | egrep -o "http://downloads.wordpress.org/plugin/[^']+"`
     #unzip -o nginx-helper.*.zip -d /usr/share/nginx/$wp_name/wp-content/plugins
