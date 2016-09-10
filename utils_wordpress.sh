@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 function update_wordpress() {
   curl -SsL http://wordpress.org/latest.tar.gz -o /root/wordpress/latest.tar.gz
