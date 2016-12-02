@@ -60,6 +60,11 @@ ENDL
 
     chown -R www-data:www-data /usr/share/nginx/$wp_name
 
+    MYSQL_PASSWORD=${MYSQL_SERVER_ENV_MYSQL_ROOT_PASSWORD:-$MYSQL_PASSWORD}
+    MYSQL_USER=${MYSQL_USER:-"root"}
+    MYSQL_HOST=${MYSQL_SERVER_PORT_3306_TCP_ADDR=:-$MYSQL_HOST}
+    [ $MYSQL_PASSWORD"x" == "x" || $MYSQL_USER"x" == "x" || $MYSQL_HOST"x" == "x" ] && echo "Can't find Mysql env variables"&& exit
+    
     echo "Create Database"
     mysql -h$MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $WORDPRESS_DB_NAME;CREATE DATABASE $WORDPRESS_DB_NAME;"
     echo "Add user $WORDPRESS_DB_USER"
