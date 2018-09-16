@@ -1,11 +1,16 @@
 #!/bin/bash
 
-function update_wordpress() {
+function install_wordpress() {
   curl -SsL http://wordpress.org/latest.tar.gz -o /root/wordpress/latest.tar.gz
 }
 
 
 function deploy_wordpress() {
+  set -x
+  if [ -z "$1" ]; then
+    echo -e "\nPlease call '$0 <wp_name> <?wp_lang:-EN_en> <?wp_host:-localhost>' to run this command!\n"
+    exit 1
+  fi
   wp_name=$1
   wp_lang=${2:-"EN_en"}
   wp_host=${3:-"localhost"}
@@ -34,7 +39,7 @@ function deploy_wordpress() {
     /'LOGGED_IN_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
     /'NONCE_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
     /Happy blogging/s/$/\nif (isset(\$_SERVER['HTTP_X_FORWARDED_PROTO']) \&\& \$_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')\n  \$_SERVER['HTTPS'] = 'on';\n/" /usr/share/nginx/$wp_name/wp-config-sample.php > /usr/share/nginx/$wp_name/wp-config.php
-    
+
     # Download nginx helper plugin
     #curl -O `curl -i -s http://wordpress.org/plugins/nginx-helper/ | egrep -o "http://downloads.wordpress.org/plugin/[^']+"`
     #unzip -o nginx-helper.*.zip -d /usr/share/nginx/$wp_name/wp-content/plugins
@@ -60,20 +65,25 @@ ENDL
 
     chown -R www-data:www-data /usr/share/nginx/$wp_name
 
-    MYSQL_PASSWORD=${MYSQL_SERVER_ENV_MYSQL_ROOT_PASSWORD:-$MYSQL_PASSWORD}
-    MYSQL_USER=${MYSQL_USER:-"root"}
-    MYSQL_HOST=${MYSQL_SERVER_PORT_3306_TCP_ADDR=:-$MYSQL_HOST}
-    [ $MYSQL_PASSWORD"x" == "x" || $MYSQL_USER"x" == "x" || $MYSQL_HOST"x" == "x" ] && echo "Can't find Mysql env variables"&& exit
-    
+    MYSQL_USER=${MYSQL_ROOT_USER:-"root"}
+    MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD:-""}
+    MYSQL_HOST=${MYSQL_HOST=:-""}
+    [ $MYSQL_PASSWORD"x" == "x" -o $MYSQL_USER"x" == "x" -o $MYSQL_HOST"x" == "x" ] && \
+    echo "Can't find Mysql env variables" && exit 1
+
     echo "Create Database"
     mysql -h$MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "DROP DATABASE IF EXISTS $WORDPRESS_DB_NAME;CREATE DATABASE $WORDPRESS_DB_NAME;"
     echo "Add user $WORDPRESS_DB_USER"
     mysql -h$MYSQL_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD -e "GRANT ALL PRIVILEGES ON $WORDPRESS_DB_NAME.* TO '$WORDPRESS_DB_USER'@'%' IDENTIFIED BY '$WORDPRESS_DB_PASSWORD'; FLUSH PRIVILEGES;"
   fi
-  
-  #This is so the passwords show up in logs. 
+
+  #This is so the passwords show up in logs.
   echo "Wordpress installed for $wp_name"
   echo "- Wordpress User created: $WORDPRESS_DB_USER"
   echo "- Mysql Database created: $WORDPRESS_DB_NAME"
   echo "- Wordpress User password: $WORDPRESS_DB_PASSWORD"
+}
+
+function update_wordpress() {
+  true
 }

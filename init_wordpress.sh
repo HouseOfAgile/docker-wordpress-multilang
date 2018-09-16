@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 # Copy ssh keys if there are presents
 if [ -d "/root/ssh-keys" -a "$(ls /root/ssh-keys)" ]; then
   mkdir -p /root/.ssh
@@ -12,7 +11,7 @@ mkdir /root/wordpress
 
 source /root/utils_wordpress.sh
 
-update_wordpress
+install_wordpress
 
 for wp_project in `find /root/projects/ -not -path '*/\.*' -type f -printf "%f\n"`
 do
