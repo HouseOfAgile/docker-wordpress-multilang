@@ -1,0 +1,17 @@
+# default name
+wp_name=dummy_wp
+
+# Default language
+wp_lang=EN_en
+
+# default host for the installation within the container
+wp_host=wp_dummy.localhost
+
+# root user
+MYSQL_ROOT_USER=root
+
+# mysql root password
+MYSQL_ROOT_PASSWORD=password
+
+# mysql host (should be within the same docker network)
+MYSQL_HOST=172.17.0.3
