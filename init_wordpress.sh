@@ -16,5 +16,5 @@ install_wordpress
 for wp_project in `find /root/projects/ -not -path '*/\.*' -type f -printf "%f\n"`
 do
   source /root/projects/$wp_project
-  deploy_wordpress $wp_project ${WP_LANG:-"ES_es"} ${WP_HOST:-"localhost"}
+  deploy_wordpress $WP_NAME ${WP_LANG:-"ES_es"} ${WP_HOST:-"localhost"}
 done

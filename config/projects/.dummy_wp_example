@@ -1,11 +1,11 @@
 # default name
-wp_name=dummy_wp
+WP_NAME=dummy_wp
 
 # Default language
-wp_lang=EN_en
+WP_LANG=EN_en
 
 # default host for the installation within the container
-wp_host=wp_dummy.localhost
+WP_HOST=wp_dummy.localhost
 
 # root user
 MYSQL_ROOT_USER=root
