@@ -35,8 +35,8 @@ If you are missing a mysql server : ```docker run --name dev-mysql -e MYSQL_ROOT
 ## Raw usage with php5 or php7 versions
 
 Use the php version you want
-- [`Dockerfile for php 5.6`](TBD)
-- [`Dockerfile for php 7.2`](TBD)
+- [`Dockerfile for php 5.6`](Dockerfile)
+- [`Dockerfile for php 7.2`](Dockerfile.php7)
 
 ## Next steps
 * Add support for wp cli ?
