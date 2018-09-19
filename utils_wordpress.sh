@@ -21,7 +21,7 @@ function deploy_wordpress() {
   if [ ! -f /usr/share/nginx/$wp_name/wp-config.php ]; then
     # mysql username should be shorter than 15 characters
     short_name=`echo $wp_name |cut -c1-11`
-    WORDPRESS_DB_NAME="wordpress_$short_name"
+    WORDPRESS_DB_NAME="wp_db_$short_name"
     WORDPRESS_DB_USER="wp_$short_name"
     WORDPRESS_DB_PASSWORD=`pwgen -c -n -1 12`
 
