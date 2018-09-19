@@ -14,8 +14,8 @@ function deploy_wordpress() {
   wp_name=$1
   wp_lang=${2:-"EN_en"}
   wp_host=${3:-"localhost"}
-  if [ ! -d /usr/share/nginx/$wp_name ]; then
-    mkdir /usr/share/nginx/$wp_name
+  if [ ! -d /usr/share/nginx/$wp_name -o "$WP_FORCE_INSTALL" = true ]; then
+    mkdir -p /usr/share/nginx/$wp_name
     tar --strip-components=1 -xzf /root/wordpress/latest.tar.gz -C /usr/share/nginx/$wp_name
   fi
   if [ ! -f /usr/share/nginx/$wp_name/wp-config.php ]; then

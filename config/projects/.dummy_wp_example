@@ -7,6 +7,9 @@ WP_LANG=EN_en
 # default host for the installation within the container
 WP_HOST=wp_dummy.localhost
 
+# set to true if you want to force install
+WP_FORCE_INSTALL=false
+
 # root user
 MYSQL_ROOT_USER=root
 
