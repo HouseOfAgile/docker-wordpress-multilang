@@ -27,6 +27,7 @@ MYSQL_HOST=172.17.0.3
 ```
 
 Then build your image and run it:
+
     docker build -f Dockerfile.php7 -t "houseofagile/docker-wordpress-multilang:php7" .
     docker run -d --name dev-wordpress -P houseofagile/docker-wordpress-multilang:php7
 
